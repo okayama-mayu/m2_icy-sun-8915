@@ -1,0 +1,15 @@
+<h1><%= @employee.name %></h1>
+<h3>Department: <%= @employee.department.name %></h3>
+
+<div id = "current-ticket">
+    <h4>Current Ticket: <%= @employee.tickets.order_by_age.first.subject %></h4>
+</div>
+
+<h4>All Open Tickets</h4>
+<% @employee.tickets.order_by_age.each_with_index do |ticket, idx| %>
+    <div id="ticket-<%= idx %>">
+        <%= ticket.subject %><br>
+        Ticket Age: <%= ticket.age %>
+    </div>
+    <br>
+<% end %>
