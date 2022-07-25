@@ -1,11 +1,18 @@
 <h1><%= @employee.name %></h1>
 <h3>Department: <%= @employee.department.name %></h3>
+<h4>Level: <%= @employee.level %></h4>
 
 <div id = "current-ticket">
-    <h4>Current Ticket: <%= @employee.tickets.order_by_age.first.subject %></h4>
+    <h4>Current Ticket: 
+    <% if @employee.tickets != [] %> 
+        <%= @employee.tickets.order_by_age.first.subject %>
+    <% else %>
+        Employee does not have any tickets 
+    <% end %>
+    </h4>
 </div>
 
-<h4>All Open Tickets</h4>
+<h4>All Open Tickets:</h4>
 <% @employee.tickets.order_by_age.each_with_index do |ticket, idx| %>
     <div id="ticket-<%= idx %>">
         <%= ticket.subject %><br>
@@ -19,3 +26,11 @@
     <%= text_field_tag(:ticket_id) %>
     <%= submit_tag("Add Ticket to Employee") %>
 <% end %>
+<br>
+
+<b>Currently Working on Tickets with:</b>
+<ul>
+    <% @employee.bestfriends.each do |name| %>
+        <li><%= name %></li>
+    <% end %>
+</ul>

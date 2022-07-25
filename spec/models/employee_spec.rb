@@ -31,5 +31,31 @@ RSpec.describe Employee, type: :model do
         expect(emp1a.tickets).to eq([mid_old, newest, oldest, mid_new, unassigned])
       end
     end
+
+    describe '#bestfriends' do 
+      it 'returns a list of employees with whom the employee shares a ticket' do 
+        dept1 = Department.create!(name: 'IT', floor: 'Basement')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
+        emp1b = dept1.employees.create!(name: 'Ariana Grande', level: 0)
+        emp1c = dept1.employees.create!(name: 'Aretha Franklin', level: 3)
+        emp1d = dept1.employees.create!(name: 'Doja Cat', level: 3)
+
+
+        mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
+        newest = Ticket.create!(subject: 'do not like my mouse', age: 2)
+        oldest = Ticket.create!(subject: 'router broken', age: 10)
+        mid_new = Ticket.create!(subject: 'cannot connect to internet', age: 4)
+
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: mid_old.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: newest.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: oldest.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: mid_new.id)
+
+        EmployeeTicket.create!(employee_id: emp1b.id, ticket_id: mid_old.id)
+        EmployeeTicket.create!(employee_id: emp1d.id, ticket_id: newest.id)
+
+        expect(emp1a.bestfriends).to eq([emp1b.name, emp1d.name])
+      end
+    end
   end
 end

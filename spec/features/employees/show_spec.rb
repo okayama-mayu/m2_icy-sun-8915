@@ -8,8 +8,8 @@ RSpec.describe 'Employee Show' do
     # I see the employee's name, department
     it 'shows the employees name and department' do 
         dept1 = Department.create!(name: 'IT', floor: 'Basement')
-        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 'mid')
-        emp1b = dept1.employees.create!(name: 'Ariana Grande', level: 'entry')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
+        emp1b = dept1.employees.create!(name: 'Ariana Grande', level: 0)
 
         visit "/employees/#{emp1a.id}"
         # save_and_open_page
@@ -23,7 +23,7 @@ RSpec.describe 'Employee Show' do
     # and a list of all of their tickets from oldest to youngest.
     it 'shows the employees tickets from oldest to youngest' do 
         dept1 = Department.create!(name: 'IT', floor: 'Basement')
-        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 'mid')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
 
         mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
         newest = Ticket.create!(subject: 'do not like my mouse', age: 1)
@@ -66,7 +66,7 @@ RSpec.describe 'Employee Show' do
     # I also see the oldest ticket assigned to the employee listed separately
     it 'shows the oldest ticket separately as the current ticket' do 
         dept1 = Department.create!(name: 'IT', floor: 'Basement')
-        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 'mid')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
 
         mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
         newest = Ticket.create!(subject: 'do not like my mouse', age: 1)
@@ -94,7 +94,7 @@ RSpec.describe 'Employee Show' do
     # I do not see any tickets listed that are not assigned to the employee
     it 'doesnt show a ticket that is not assigned to the employee' do 
         dept1 = Department.create!(name: 'IT', floor: 'Basement')
-        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 'mid')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
 
         mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
         newest = Ticket.create!(subject: 'do not like my mouse', age: 2)
@@ -122,7 +122,7 @@ RSpec.describe 'Employee Show' do
     # (you do not have to test for sad path, for example if the id does not match an existing ticket
     it 'has a form that adds a ticket to the employees list' do 
         dept1 = Department.create!(name: 'IT', floor: 'Basement')
-        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 'mid')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
 
         mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
         newest = Ticket.create!(subject: 'do not like my mouse', age: 2)
@@ -151,5 +151,55 @@ RSpec.describe 'Employee Show' do
 
             expect(page).to_not have_content('cant start computer')
         end
+    end 
+
+    # Extension
+    # Best Friends
+    # As a user,
+    # When I visit an employee's show page
+    # I see that employees name and level
+    it 'shows the employees name and level' do 
+        dept1 = Department.create!(name: 'IT', floor: 'Basement')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
+        emp1b = dept1.employees.create!(name: 'Ariana Grande', level: 0)
+
+        visit "/employees/#{emp1a.id}"
+        # save_and_open_page
+
+        expect(page).to have_content('Mariah Carey')
+        expect(page).to have_content('Level: 1')
+        expect(page).to_not have_content('Ariana Grande')
+        expect(page).to_not have_content('Level: 0')
+    end
+
+    # and I see a unique list of all the other employees that this employee shares tickets with
+    it 'doesnt show a ticket that is not assigned to the employee' do 
+        dept1 = Department.create!(name: 'IT', floor: 'Basement')
+        emp1a = dept1.employees.create!(name: 'Mariah Carey', level: 1)
+        emp1b = dept1.employees.create!(name: 'Ariana Grande', level: 0)
+        emp1c = dept1.employees.create!(name: 'Aretha Franklin', level: 3)
+        emp1d = dept1.employees.create!(name: 'Doja Cat', level: 3)
+
+
+        mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
+        newest = Ticket.create!(subject: 'do not like my mouse', age: 2)
+        oldest = Ticket.create!(subject: 'router broken', age: 10)
+        mid_new = Ticket.create!(subject: 'cannot connect to internet', age: 4)
+
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: mid_old.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: newest.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: oldest.id)
+        EmployeeTicket.create!(employee_id: emp1a.id, ticket_id: mid_new.id)
+
+        EmployeeTicket.create!(employee_id: emp1b.id, ticket_id: mid_old.id)
+        EmployeeTicket.create!(employee_id: emp1d.id, ticket_id: newest.id)
+
+        visit "/employees/#{emp1a.id}"
+        # save_and_open_page
+        
+        expect(page).to have_content('Ariana Grande')
+        expect(page).to have_content('Doja Cat')
+
+        expect(page).to_not have_content('Aretha Franklin')
     end 
 end

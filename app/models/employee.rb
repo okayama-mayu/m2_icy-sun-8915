@@ -8,4 +8,8 @@ class Employee < ApplicationRecord
     ticket = Ticket.find(ticket_id)
     tickets << ticket 
   end
+
+  def bestfriends
+    tickets.select('employees.*').joins(:employees).where.not(employees: {name: self.name}).pluck(:name)
+  end
 end

@@ -9,6 +9,9 @@ RSpec.describe Ticket, type: :model do
     describe 'class methods' do 
         describe '#order_by_age' do 
             it 'orders tickets oldest to newest' do 
+                EmployeeTicket.destroy_all
+                Ticket.destroy_all 
+
                 mid_old = Ticket.create!(subject: 'printer out of toner', age: 7)
                 newest = Ticket.create!(subject: 'do not like my mouse', age: 1)
                 oldest = Ticket.create!(subject: 'router broken', age: 10)
